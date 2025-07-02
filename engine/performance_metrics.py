@@ -14,7 +14,7 @@ def main():
         end="2024-01-01",
         interval="1d",
         auto_adjust=True
-    )["Close"]
+    )["Close"] # type: ignore
     bench = bench_prices.pct_change().dropna()
     bench.name = "SPY"  
     print("Fetched SPY returns with length", len(bench))
@@ -30,7 +30,7 @@ def main():
 
     for col in rets.columns:
         cov   = df[col].cov(df["SPY"])
-        beta  = cov / var_bench
+        beta  = cov / var_bench # type: ignore
         alpha = df[col].mean() - beta * mean_bench
         results[col] = {"beta": beta, "alpha": alpha}
 
