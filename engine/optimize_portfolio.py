@@ -1,5 +1,5 @@
 # engine/optimize_portfolio.py
-
+#import everything -  *Juypter runs in my desktop /   - execute all the code as one file (through juypter notebook or script)
 import logging
 import pandas as pd
 from pypfopt import EfficientFrontier, risk_models, expected_returns
