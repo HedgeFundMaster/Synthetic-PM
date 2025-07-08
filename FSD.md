@@ -50,7 +50,7 @@ Build an automated, extensible **portfolio construction and risk management engi
   - **FR6a.1:** Enforce no shorting (`w ≥ 0`)  
   - **FR6a.2:** Enforce max weight per asset (e.g. `w ≤ 20%`)  
   - **FR6a.3 (Optional):** L₂ regularization to smooth weight spikes
-- **FR6b:** **Black–Litterman integration**  
+- **FR6b:** **Black–Litterman integration**  (research this tonight 1 hour)
   - Stub in `black_litterman_engine.py` for P, Q, τ views  
   - Blend BL expected returns/cov into optimizer
 - **FR7:** `drawdown_analysis.py` → computes daily drawdown series + max drawdown
