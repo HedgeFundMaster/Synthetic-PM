@@ -2,7 +2,6 @@
 # engine/murphy_report.py
 
 import logging
-from pathlib import Path
 
 import pandas as pd
 
@@ -43,12 +42,13 @@ def main():
 
     logging.info("Computing summary statistics")
     stats = murphy_summary_stats(sims)
+    print("\nMurphy Risk Summary:")
     for k, v in stats.items():
-        logging.info(f"{k}: {v:.4f}")
+        print(f"{k}: {v:.4f}")
 
-    out_path = Path("data/murphy_metrics.csv")
-    pd.DataFrame.from_dict(stats, orient="index", columns=["Value"]).to_csv(out_path)
-    logging.info(f"Saved Murphy stats to {out_path}")
+    # Save to CSV
+    pd.Series(stats).to_csv("data/murphy_summary.csv")
+    logging.info("✅ Saved murphy_summary.csv")
 
 if __name__ == "__main__":
     main()

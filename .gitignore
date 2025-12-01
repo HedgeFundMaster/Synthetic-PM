@@ -1,9 +1,21 @@
-# Virtual environment
+# Virtual envs
 venv/
+.venv/
+
 # Byte-compiled / cache
 __pycache__/
+*.py[cod]
+
+# IDE configs
+.vscode/
+*.code-workspace
+
+# Mac Finder
+.DS_Store
+
 # Data files
 data/*.csv
 data/*.db
+
 # Secrets
 .env

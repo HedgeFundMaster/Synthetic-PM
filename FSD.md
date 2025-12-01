@@ -1,135 +1,157 @@
-# 🧠 Trading Algo FSD  
-### Synthetic PM Model (SPMM) — Functional Specification Document
+# 🧠 Synthetic PMM Functional Specification Document (FSD)
+
+## 🔄 Version
+**v2.2** – Last updated: November 30, 2025
 
 ---
 
-### 💡 Core Mission:
-Build an automated, extensible **portfolio construction and risk management engine** simulating a real-world hedge fund PM. It combines:
-
-- 🧮 **Quantitative rigor** (MVO + Black–Litterman, alpha/beta metrics)
-- ⚠️ **Risk defense** (drawdown analysis, Murphy’s Law framework)
-- 📊 **Performance reporting** (Sharpe, Alpha, Beta, Max Drawdown, volatility)
-- 🧠 **Conviction-weighted logic** to reweight/hedge based on signals
+## 📌 Objective
+Build a real-time Synthetic Portfolio Management Model (SPMM) that mimics the discretionary and systematic workflows of hedge fund PMs using quant signals, macro overlays, risk modeling, and AI.
 
 ---
 
-### 1. Introduction  
-**Purpose:** Define design & requirements for Synthetic PM Model (SPMM), from ingestion to execution simulation.  
-**Audience:** Quant PMs, researchers, engineers.
+## 🧱 System Architecture Overview
 
----
-
-### 2. Scope  
-- **Modular pipeline:**  
-  `Data ingestion → Returns engine → Optimization → Macro logic → Risk monitoring → Execution simulation → Dashboard`  
-- **MVP:** Local Streamlit interface → longer‑term: full web deployment
-
----
-
-### 3. Terminology ✅
-- **Universe:** List of tickers
-- **Returns:** Simple & log
-- **Optimizer:** Mean–variance & Black–Litterman
-- **Macro Overlay:** Regime detection, event rules
-- **Drawdown:** Peak-to-trough decline
-- **Metrics:** Sharpe, Alpha, Beta, Max DD, annualized return/vol
-
----
-
-### 4. Functional Requirements
-
-#### 4.1 Data Layer ✅
-- **FR1:** Upload/manage `tickers.csv`
-- **FR2:** `fetch_data.py` — fetch adjusted closes from Yahoo Finance
-- **FR3:** `compute_returns.py` → outputs `simple_returns.csv`, `log_returns.csv`
-
-#### 4.2 Quant Engine 🧠 *(In Progress)*
-- **FR4:** `optimize_portfolio.py` computes MVO weights
-- **FR5:** `performance_metrics.py` → calculates alpha, beta, volatility, Sharpe
-- **FR6a:** **Position limits & regularization**  
-  - **FR6a.1:** Enforce no shorting (`w ≥ 0`)  
-  - **FR6a.2:** Enforce max weight per asset (e.g. `w ≤ 20%`)  
-  - **FR6a.3 (Optional):** L₂ regularization to smooth weight spikes
-- **FR6b:** **Black–Litterman integration**  (research this tonight 1 hour)
-  - Stub in `black_litterman_engine.py` for P, Q, τ views  
-  - Blend BL expected returns/cov into optimizer
-- **FR7:** `drawdown_analysis.py` → computes daily drawdown series + max drawdown
-- **FR8:** `metrics_report.py` → aggregates KPIs: annualized return, volatility, Sharpe, alpha/beta, max drawdown
-
-#### 4.3 Macro Overlay *(Upcoming)*
-- **FR9:** Regime detection (`macro_overlay.py`) using indicators (e.g. VIX, CPI, yield curve)
-- **FR10:** Event rule engine: map macro events to sector tilts
-- **FR11:** Blend quant weights with macro tilts based on conviction factor
-
-#### 4.4 Execution Simulator *(Week 4)*
-- **FR12:** Simulate trades with slippage, transaction costs
-- **FR13:** Log trades in CSV/DB
-- **FR14:** Compute simulated P&L over time
-
-#### 4.5 Visualization & UI *(Week 5)*
-- **FR15:** Streamlit dashboard or similar  
-  - Select universe, view prices & returns  
-  - Display optimized weights & performance charts  
-  - Scenario panel: adjust macro events & re-run
-
----
-
-### 5. Non-Functional Requirements
-- **NFR1:** Modular code organization under `/engine`
-- **NFR2:** Robust logging, error handling
-- **NFR3:** GitHub Actions CI for unit tests (e.g. test metrics functions)
-- **NFR4:** Performance: data fetch <1 min for 1,000 tickers, optimization <30s
-
----
-
-### 6. Timeline / Roadmap
-| Week | Focus                                    | Status           |
-|------|------------------------------------------|------------------|
-| 1    | Data ingestion pipeline                  | ✅ Complete       |
-| 2    | Returns engine & basic MVO optimizer     | ✅ Complete       |
-| 3    | Macro overlay & blending logic           | 🟡 In progress    |
-| 4    | Execution simulator & trade logging      | 🔜 Upcoming       |
-| 5    | Streamlit UI & visualization             | 🔜 Upcoming       |
-| 6    | Deployment, documentation, refactoring   | 🔜 Upcoming       |
-
----
-
-### 7. Appendices
-**A. Folder Structure**
-```bash
-Synthetic-PM/
-├── engine/
-│   ├── fetch_data.py
-│   ├── compute_returns.py
-│   ├── optimize_portfolio.py
-│   ├── performance_metrics.py
-│   ├── drawdown_analysis.py
-│   ├── metrics_report.py
-│   ├── black_litterman_engine.py  # soon
-│   └── macro_overlay.py           # soon
-├── data/
-│   ├── tickers.csv
-│   ├── price_data.csv
-│   ├── simple_returns.csv
-│   ├── optimized_weights.csv
-│   ├── portfolio_drawdown.csv
-│   └── metrics_summary.csv
-├── tests/                         # add unit tests here
-├── streamlit_app.py              # optional UI
-├── FSD.md
-├── README.md
-├── requirements.txt
-└── .gitignore
+```
+                    +-------------------+
+                    |  Market + Macro   |
+                    |    Data Feeds     |
+                    +-------------------+
+                              |
+                              v
++-----------+       +-------------------+       +----------------+       +-------------+
+| price_data|-----> |  Optimizer Engine |-----> | Portfolio Weights |---> | Execution Sim |
++-----------+       +-------------------+       +----------------+       +-------------+
+                              |
+                              v
+                    +-------------------+
+                    | Performance Engine |
+                    +-------------------+
+                              |
+                              v
+                    +-------------------+
+                    | Murphy Risk Module |
+                    +-------------------+
+                              |
+                              v
+                    +-------------------+
+                    |  Metrics + Reports |
+                    +-------------------+
 ```
 
-**B. Data Schema**
-| File                      | Description                              |
-|---------------------------|------------------------------------------|
-| `simple_returns.csv`      | Daily returns matrix (dates × tickers)   |
-| `optimized_weights.csv`   | Cleaned portfolio weights (ticker × w)   |
-| `portfolio_drawdown.csv`  | Daily drawdown series                    |
-| `metrics_summary.csv`     | One-row KPI snapshot                     |
-| `views.csv`               | Black–Litterman views (ticker × view %)  |
-```
+---
+
+## ✅ Core Modules
+
+### 1. **Optimizer Engine**
+- File: `optimize_portfolio.py`
+- Libraries: PyPortfolioOpt
+- Inputs: `price_data.csv`
+- Logic:
+  - Compute expected returns + sample covariance
+  - Optimize for max Sharpe ratio
+  - Clean weights
+  - Output to: `optimized_weights.csv`
+- ✅ Now includes constraint logic (max weight per asset)
+
+---
+
+### 2. **Performance Metrics Engine**
+- File: `metrics_report.py`
+- Inputs: `simple_returns.csv`, `optimized_weights.csv`, `portfolio_drawdown.csv`
+- Outputs: `metrics_summary.csv`
+- Metrics Tracked:
+  - Annualized Return
+  - Volatility
+  - Sharpe Ratio
+  - Beta
+  - Alpha
+  - Max Drawdown
+- ✅ Confirmed clean end-to-end execution
+
+---
+
+### 3. **Murphy Risk Module**
+- File: `murphy_risk_model.py` + `murphy_report.py`
+- Purpose: Simulates tail risk events & portfolio resilience under rare shocks (e.g. 20% crash days)
+- Simulation Type: Monte Carlo
+- Key Params:
+  - 5000 Simulations
+  - 252 Days
+  - 2% shock probability
+  - -20% shock magnitude
+- Outputs:
+  - Simulated return paths
+  - Plot of outcomes
+  - Summary stats: Worst Case Return, VaR, Skew, etc.
+- 🔧 Next: Add `.csv` output for Murphy summary metrics
+
+---
+
+### 4. **Macro Overlay Engine**
+- File: `macro_overlay.py`
+- Status: Scaffolded
+- Logic in progress:
+  - If VIX > 25 → reduce cyclicals
+  - If CPI YoY > 4% → tilt toward real assets
+  - Can adjust optimizer weights dynamically
+- Input: Mock `macro_indicators.csv` for now
+
+---
+
+### 5. **Development Notebook (New)**
+- File: `SPMM_dev_lab.ipynb`
+- Purpose:
+  - Interactive experimentation
+  - Simulations + visualizations
+  - Easy parameter tuning for Murphy and Optimizer
+- Run via VS Code’s Jupyter environment
+- Kernel: Use project virtual environment
+- Useful for:
+  - Debugging
+  - Visual testing
+  - Future: Macroeconomic blending visual UI
+
+---
+
+## 🔮 Next Phase Modules
+
+### 🔜 Black–Litterman Engine
+- File: `black_litterman_engine.py`
+- Goal: Incorporate subjective macro views into optimization
+- Logic:
+  - Read `views.csv` (e.g. META expected to outperform SPY by 3%)
+  - Blend with priors using B-L formula
+  - Output new expected returns → pass to optimizer
+- Status: Not started (Week 4 priority)
+
+### 🔬 Physics Risk Engine (Future Edge)
+- Entropy, liquidity modeling, non-linear shock chains
+- Inspired by Farther, Point72, and QIS frameworks
+- Will layer on top of Murphy module
+
+---
+
+## 📄 Other Docs
+- `README.md` – Top-level project instructions
+- `requirements.txt` – All current Python dependencies
+- `.gitignore` – Keeps data + secrets out of Git
+
+---
+
+## 📅 Completion Timeline
+
+| Week | Focus                                  | Status      |
+|------|----------------------------------------|-------------|
+| 1    | Data ingestion, returns, drawdowns     | ✅ Complete |
+| 2    | Optimizer + metrics engine             | ✅ Complete |
+| 3    | Murphy risk + macro overlay            | 🔄 In Progress |
+| 4    | Black–Litterman integration            | ⏳ Next     |
+| 5    | Physics-based logic + risk sims        | 🔒 Planned  |
+| 6    | UI, deployment polish                  | 🔒 Planned  |
+
+---
+
+
 
 
